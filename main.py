@@ -27,7 +27,7 @@ def init_context(window):
     # activation de la gestion de la profondeur
     GL.glEnable(GL.GL_DEPTH_TEST)
     # choix de la couleur de fond
-    GL.glClearColor(0.5, 0.6, 0.9, 1.0)
+    GL.glClearColor(1, 0, 0, 1.0)
     print(f"OpenGL: {GL.glGetString(GL.GL_VERSION).decode('ascii')}")
 
 def init_program():
@@ -65,5 +65,3 @@ def main():
 if __name__ == '__main__':
     main()
 
-def f():
-    return ''

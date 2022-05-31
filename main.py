@@ -10,7 +10,7 @@ def main():
     viewer = ViewerGL()
 
     viewer.set_camera(Camera())
-    viewer.cam.transformation.translation.y = 2
+    viewer.cam.transformation.translation.y   = 2
     viewer.cam.transformation.rotation_center = viewer.cam.transformation.translation.copy()
 
     program3d_id  = glutils.create_program_from_file('shader.vert', 'shader.frag')

@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+from asyncio import constants
 import OpenGL.GL as GL
 import glfw
 import pyrr
@@ -33,6 +34,9 @@ class ViewerGL:
         self.touch = {}
 
     def run(self):
+        global t_espace
+        #initialisation de la variable t_espace pour le saut
+        t_espace = 0
         # boucle d'affichage
         while not glfw.window_should_close(self.window):
             # nettoyage de la fenêtre : fond et profondeur
@@ -52,6 +56,16 @@ class ViewerGL:
             self.cam.transformation.rotation_center = self.objs[0].transformation.translation + self.objs[0].transformation.rotation_center
             self.cam.transformation.translation = self.objs[0].transformation.translation + pyrr.Vector3([0, 1, 5])
 
+            #Pour le saut (il faut mettre le code ici sinon ça ne boucle pas)
+            if t_espace > 50 :
+                self.objs[0].transformation.translation.y += 0.01
+                t_espace = t_espace -1
+            elif 0 < t_espace <= 50:
+                self.objs[0].transformation.translation.y -= 0.01
+                t_espace = t_espace -1
+            else :
+                t_espace = 0
+
             # changement de buffer d'affichage pour éviter un effet de scintillement
             glfw.swap_buffers(self.window)
             # gestion des évènements
@@ -59,10 +73,14 @@ class ViewerGL:
             
         
     def key_callback(self, win, key, scancode, action, mods):
+        global t_espace
         # sortie du programme si appui sur la touche 'échappement'
         if key == glfw.KEY_ESCAPE and action == glfw.PRESS:
             glfw.set_window_should_close(win, glfw.TRUE)
         self.touch[key] = action
+        if t_espace == 0 : #cette condition permet de pas superposer deux sauts
+            if key == glfw.KEY_SPACE and action == glfw.PRESS:
+                t_espace = 120
     
     def add_object(self, obj):
         self.objs.append(obj)
@@ -122,5 +140,3 @@ class ViewerGL:
         if glfw.KEY_L in self.touch and self.touch[glfw.KEY_L] > 0:
             self.cam.transformation.rotation_euler[pyrr.euler.index().yaw] += 0.1
 
-        #if glfw.KEY_SPACE in self.touch and self.touch[glfw.KEY_SPACE] > 0:
-            

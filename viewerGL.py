@@ -1,6 +1,4 @@
 #!/usr/bin/env python3
-#coucou giroud
-#coucou thibaut
 
 import OpenGL.GL as GL
 import glfw

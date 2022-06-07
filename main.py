@@ -1,7 +1,7 @@
 from viewerGL import ViewerGL
 import glutils
 from mesh import Mesh
-from cpe3d import Object3D, Camera, Transformation3D, Text
+from cpe3d import Object3D, Camera, Transformation3D, Text, ObjectPhyx
 import numpy as np
 import OpenGL.GL as GL
 import pyrr
@@ -24,7 +24,8 @@ def main():
     tr.translation.z     = -5
     tr.rotation_center.z = 0.2
     texture              = glutils.load_texture('stegosaurus.jpg')
-    o                    = Object3D(m.load_to_gpu(), m.get_nb_triangles(), program3d_id, texture, tr)
+    vitesse              = pyrr.Vector3()
+    o                    = ObjectPhyx(m.load_to_gpu(), m.get_nb_triangles(), program3d_id, texture, tr, vitesse)
     viewer.add_object(o)
 
     m = Mesh()

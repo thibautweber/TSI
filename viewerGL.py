@@ -6,6 +6,7 @@ import glfw
 import pyrr
 import numpy as np
 from cpe3d import Object3D
+import time
 
 class ViewerGL:
     def __init__(self):
@@ -34,7 +35,7 @@ class ViewerGL:
         self.touch = {}
 
     def run(self):
-        global t_espace, t_right, t_left, t_pos
+        global t_espace, t_right, t_left, t_pos, dt
         #initialisation de la variable t_espace pour le saut
         t_espace = 0
         t_right  = 0
@@ -76,21 +77,32 @@ class ViewerGL:
             #else :
             #    t_espace = 0
             
-            #Le saut (méthode sans gravité)
-
+            #Le saut (méthode avec gravité)
+            #start = time.time()
+            if self.objs[0].transformation.translation.y > 1 : #si l'object est en l'air
+                g  = pyrr.Vector3([0,9.81,0]) #9.81 pour la gravité
+                #dt = time.time() - start
+                self.objs[0].vitesse                    -= g * 0.05
+                self.objs[0].transformation.translation += self.objs[0].vitesse * 0.05
+            #pour empêcher que notre personnage s'enfonce dans le sol :
+            if self.objs[0].transformation.translation.y < 1 :
+                self.objs[0].transformation.translation.y = 1
 
             #Déplacement à droite
             if t_right > 0 :
-                self.objs[0].transformation.translation.x -= 0.05
+                self.objs[0].transformation.translation.x -= 0.2
                 t_right = t_right -1
             else :
                 t_right = 0
             #Déplacement à gauche
             if t_left > 0 :
-                self.objs[0].transformation.translation.x += 0.05
+                self.objs[0].transformation.translation.x += 0.2
                 t_left = t_left -1
             else :
                 t_left = 0
+
+            t=glfw.get_time()
+            print(t)
 
             # changement de buffer d'affichage pour éviter un effet de scintillement
             glfw.swap_buffers(self.window)
@@ -104,19 +116,21 @@ class ViewerGL:
         if key == glfw.KEY_ESCAPE and action == glfw.PRESS:
             glfw.set_window_should_close(win, glfw.TRUE)
         self.touch[key] = action
-        if t_espace == 0 : #cette condition permet de pas superposer deux sauts
-            if key == glfw.KEY_SPACE and action == glfw.PRESS:
-                t_espace = 100
-        if t_left == 0 and t_right == 0 and t_pos >-1:
+        #if t_espace == 0 : #cette condition permet de pas superposer deux sauts
+        if key == glfw.KEY_SPACE and action == glfw.PRESS:
+            self.objs[0].vitesse.y = 10
+            self.objs[0].transformation.translation.y = 1.01
+
+        if t_left == 0 and t_right == 0 and t_pos >-1 :
         #le t_left == 0 et t_right == 0 sont les conditions qui font que on ne peut pas faire deux déplacements simultanés
         #t_pos est une variable qui stock une valeur en fonction de la position, qui permet de définir des déplacements interdits   
-                if glfw.KEY_LEFT in self.touch and self.touch[glfw.KEY_LEFT] > 0:
-                    t_left  = 50
-                    t_pos -= 1
+            if glfw.KEY_LEFT in self.touch and self.touch[glfw.KEY_LEFT] > 0:
+                t_left  = 30
+                t_pos -= 1
                     #print("t_pos vaut", t_pos)     #pour vérifier que t_pos marche bien
         if t_right == 0 and t_left == 0 and t_pos <1:
                 if glfw.KEY_RIGHT in self.touch and self.touch[glfw.KEY_RIGHT] > 0:
-                    t_right = 50 
+                    t_right = 30 
                     t_pos += 1
                     #print("t_pos vaut", t_pos)     #pour vérifier que t_pos marche bien
     

@@ -57,6 +57,11 @@ class Object3D(Object):
 
         super().draw()
 
+class ObjectPhyx(Object3D):
+    def __init__(self, vao, nb_triangle, program, texture, transformation, vitesse):
+        super().__init__(vao, nb_triangle, program, texture, transformation)
+        self.vitesse = vitesse
+
 class Camera:
     def __init__(self, transformation = Transformation3D(translation=pyrr.Vector3([0, 1, 0], dtype='float32')), projection = pyrr.matrix44.create_perspective_projection(60, 1, 0.01, 100)):
         self.transformation = transformation

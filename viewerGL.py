@@ -125,12 +125,12 @@ class ViewerGL:
         #le t_left == 0 et t_right == 0 sont les conditions qui font que on ne peut pas faire deux déplacements simultanés
         #t_pos est une variable qui stock une valeur en fonction de la position, qui permet de définir des déplacements interdits   
             if glfw.KEY_LEFT in self.touch and self.touch[glfw.KEY_LEFT] > 0:
-                t_left  = 30
+                t_left  = 20
                 t_pos -= 1
                     #print("t_pos vaut", t_pos)     #pour vérifier que t_pos marche bien
         if t_right == 0 and t_left == 0 and t_pos <1:
                 if glfw.KEY_RIGHT in self.touch and self.touch[glfw.KEY_RIGHT] > 0:
-                    t_right = 30 
+                    t_right = 20
                     t_pos += 1
                     #print("t_pos vaut", t_pos)     #pour vérifier que t_pos marche bien
     

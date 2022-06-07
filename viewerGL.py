@@ -5,8 +5,10 @@ import OpenGL.GL as GL
 import glfw
 import pyrr
 import numpy as np
+from numpy.linalg import norm
 from cpe3d import Object3D
 import time
+
 
 class ViewerGL:
     def __init__(self):
@@ -99,10 +101,24 @@ class ViewerGL:
                 self.objs[0].transformation.translation.x += 0.2
                 t_left = t_left -1
             else :
-                t_left = 0
+                t_left = 0      
 
-            t=glfw.get_time()
-            print(t)
+            #Collisions
+            #On récupère la hitbox de chaque objet
+            hitbox_cube  = self.objs[2].transformation.transition
+            #hitbox_cube2  = self.objs[3].transformation.transition
+            hitbox_spere = self.objs[0].transformation.transition
+            #On gère les collisions (affichage game over + score)
+            if norm(hitbox_spere-hitbox_cube)   < 2 :
+                score=glfw.get_time()
+                print("Vous avez perdu !")
+                print("Votre score est de : ", score)
+                glfw.set_window_should_close(self.window, glfw.TRUE)
+            #elif norm(hitbox_spere-hitbox_cube2) < 2:
+            #    score=glfw.get_time()
+            #    print("Vous avez perdu !")
+            #    print("Votre score est de : ", score)
+            #    glfw.set_window_should_close(self.window, glfw.TRUE)
 
             # changement de buffer d'affichage pour éviter un effet de scintillement
             glfw.swap_buffers(self.window)
@@ -173,6 +189,6 @@ class ViewerGL:
 
     def update_key(self):
         if glfw.KEY_J in self.touch and self.touch[glfw.KEY_J] > 0:
-            self.cam.transformation.rotation_euler[pyrr.euler.index().yaw] -= 3.15
+            self.cam.transformation.rotation_euler[pyrr.euler.index().yaw] -= 3.1415
 
 

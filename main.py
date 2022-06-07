@@ -27,15 +27,57 @@ def main():
     o                    = Object3D(m.load_to_gpu(), m.get_nb_triangles(), program3d_id, texture, tr)
     viewer.add_object(o)
 
+    #m = Mesh()
+    #p0, p1, p2, p3 = [-25, 0, -25], [25, 0, -25], [25, 0, 25], [-25, 0, 25]
+    #n, c           = [0, 1, 0], [1, 1, 1]
+    #t0, t1, t2, t3 = [0, 0], [1, 0], [1, 1], [0, 1]
+    #m.vertices     = np.array([[p0 + n + c + t0], [p1 + n + c + t1], [p2 + n + c + t2], [p3 + n + c + t3]], np.float32)
+    #m.faces        = np.array([[0, 1, 2], [0, 2, 3]], np.uint32)
+    #texture        = glutils.load_texture('grass.jpg')
+    #o              = Object3D(m.load_to_gpu(), m.get_nb_triangles(), program3d_id, texture, Transformation3D())
+    #viewer.add_object(o)
+
+    nb_points = 50
     m = Mesh()
-    p0, p1, p2, p3 = [-25, 0, -25], [25, 0, -25], [25, 0, 25], [-25, 0, 25]
+    u = np.linspace(0, 2 * np.pi, nb_points)
+    v = np.linspace(0, np.pi, nb_points)
+    r = 1
+    x = r * np.outer(np.cos(u), np.sin(v))
+    y = r * np.outer(np.sin(u), np.sin(v))
+    z = r * np.outer(np.ones(np.size(u)), np.cos(v))[0]
+    p0, p1, p2, p3 = [x, y, z], [x, y, z], [x, y, z], [x, y, z]
     n, c           = [0, 1, 0], [1, 1, 1]
     t0, t1, t2, t3 = [0, 0], [1, 0], [1, 1], [0, 1]
-    m.vertices     = np.array([[p0 + n + c + t0], [p1 + n + c + t1], [p2 + n + c + t2], [p3 + n + c + t3]], np.float32)
-    m.faces        = np.array([[0, 1, 2], [0, 2, 3]], np.uint32)
+
+    p = []
+    for i in range(len(u)):
+        for j in range(len(v)):
+            x = r * np.outer(np.cos(u[i]), np.sin(v[j]))
+            y = r * np.outer(np.sin(u[i]), np.sin(v[j]))
+            z = r * np.outer(np.ones(np.size(u[i])), np.cos(v[j]))[0]
+            pc = [x, y, z, x/r, y/r, z/r, 1,1,1, 0,0] #on crée les points qui définissent la sphère
+            p.append(pc)
+    m.vertices = np.array(p, np.float32)
+    print(m.vertices)
+
+    t = [] #on initialise le tableau contenant les points des triangles au sein de la sphère
+    for i in range(len(u)-1):
+        for j in range(len(v)-1):
+            tc0 = [i+j*nb_points, i+1+j*nb_points, i+(j+1)*nb_points] #on crée le premier triangle adjacent au point cible
+            tc1 = [i+1+(j+1)*nb_points, i+1+j*nb_points, i+(j+1)*nb_points] #on crée le second triangle adjacent au point cible
+            t.append(tc0)
+            t.append(tc1)
+    m.faces = np.array(t, np.uint32)
+    print(m.faces)
+    
+
+
+    # m.vertices     = np.array([[p0 + n + c + t0], [p1 + n + c + t1], [p2 + n + c + t2], [p3 + n + c + t3]], np.float32)
+    # m.faces        = np.array([[0, 1, 2], [0, 2, 3]], np.uint32)
     texture        = glutils.load_texture('grass.jpg')
     o              = Object3D(m.load_to_gpu(), m.get_nb_triangles(), program3d_id, texture, Transformation3D())
     viewer.add_object(o)
+
 
     vao     = Text.initalize_geometry()
     texture = glutils.load_texture('fontB.jpg')

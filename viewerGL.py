@@ -34,9 +34,12 @@ class ViewerGL:
         self.touch = {}
 
     def run(self):
-        global t_espace
+        global t_espace, t_right, t_left, t_pos
         #initialisation de la variable t_espace pour le saut
         t_espace = 0
+        t_right  = 0
+        t_left   = 0
+        t_pos    = 0
         # boucle d'affichage
         while not glfw.window_should_close(self.window):
             # nettoyage de la fenêtre : fond et profondeur
@@ -60,15 +63,34 @@ class ViewerGL:
             self.objs[0].transformation.translation += \
                 pyrr.matrix33.apply_to_vector(pyrr.matrix33.create_from_eulers(self.objs[0].transformation.rotation_euler), pyrr.Vector3([0, 0, 0.02]))
 
-            #Pour le saut (il faut mettre le code ici sinon ça ne boucle pas)
-            if t_espace > 50 :
-                self.objs[0].transformation.translation.y += 0.01
-                t_espace = t_espace -1
-            elif 0 < t_espace <= 50:
-                self.objs[0].transformation.translation.y -= 0.01
-                t_espace = t_espace -1
+            
+            #Pour les déplacements (il faut mettre le code ici sinon ça ne boucle pas)
+            
+            #Le saut (méthode sans gravité)
+            #if t_espace > 50 :
+            #    self.objs[0].transformation.translation.y += 0.01
+            #    t_espace = t_espace -1
+            #elif 0 < t_espace <= 50:
+            #    self.objs[0].transformation.translation.y -= 0.01
+            #    t_espace = t_espace -1
+            #else :
+            #    t_espace = 0
+            
+            #Le saut (méthode sans gravité)
+
+
+            #Déplacement à droite
+            if t_right > 0 :
+                self.objs[0].transformation.translation.x -= 0.05
+                t_right = t_right -1
             else :
-                t_espace = 0
+                t_right = 0
+            #Déplacement à gauche
+            if t_left > 0 :
+                self.objs[0].transformation.translation.x += 0.05
+                t_left = t_left -1
+            else :
+                t_left = 0
 
             # changement de buffer d'affichage pour éviter un effet de scintillement
             glfw.swap_buffers(self.window)
@@ -77,14 +99,26 @@ class ViewerGL:
             
         
     def key_callback(self, win, key, scancode, action, mods):
-        global t_espace
+        global t_espace, t_right, t_left, t_pos
         # sortie du programme si appui sur la touche 'échappement'
         if key == glfw.KEY_ESCAPE and action == glfw.PRESS:
             glfw.set_window_should_close(win, glfw.TRUE)
         self.touch[key] = action
         if t_espace == 0 : #cette condition permet de pas superposer deux sauts
             if key == glfw.KEY_SPACE and action == glfw.PRESS:
-                t_espace = 120
+                t_espace = 100
+        if t_left == 0 and t_right == 0 and t_pos >-1:
+        #le t_left == 0 et t_right == 0 sont les conditions qui font que on ne peut pas faire deux déplacements simultanés
+        #t_pos est une variable qui stock une valeur en fonction de la position, qui permet de définir des déplacements interdits   
+                if glfw.KEY_LEFT in self.touch and self.touch[glfw.KEY_LEFT] > 0:
+                    t_left  = 50
+                    t_pos -= 1
+                    #print("t_pos vaut", t_pos)     #pour vérifier que t_pos marche bien
+        if t_right == 0 and t_left == 0 and t_pos <1:
+                if glfw.KEY_RIGHT in self.touch and self.touch[glfw.KEY_RIGHT] > 0:
+                    t_right = 50 
+                    t_pos += 1
+                    #print("t_pos vaut", t_pos)     #pour vérifier que t_pos marche bien
     
     def add_object(self, obj):
         self.objs.append(obj)
@@ -124,11 +158,6 @@ class ViewerGL:
         GL.glUniformMatrix4fv(loc, 1, GL.GL_FALSE, self.cam.projection)
 
     def update_key(self):
-        if glfw.KEY_LEFT in self.touch and self.touch[glfw.KEY_LEFT] > 0:
-            self.objs[0].transformation.rotation_euler[pyrr.euler.index().yaw] -= 0.1
-        if glfw.KEY_RIGHT in self.touch and self.touch[glfw.KEY_RIGHT] > 0:
-            self.objs[0].transformation.rotation_euler[pyrr.euler.index().yaw] += 0.1
-
         if glfw.KEY_J in self.touch and self.touch[glfw.KEY_J] > 0:
             self.cam.transformation.rotation_euler[pyrr.euler.index().yaw] -= 3.15
 

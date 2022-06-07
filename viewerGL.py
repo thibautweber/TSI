@@ -131,12 +131,7 @@ class ViewerGL:
         if glfw.KEY_RIGHT in self.touch and self.touch[glfw.KEY_RIGHT] > 0:
             self.objs[0].transformation.rotation_euler[pyrr.euler.index().yaw] += 0.1
 
-        if glfw.KEY_I in self.touch and self.touch[glfw.KEY_I] > 0:
-            self.cam.transformation.rotation_euler[pyrr.euler.index().roll] -= 0.1
-        if glfw.KEY_K in self.touch and self.touch[glfw.KEY_K] > 0:
-            self.cam.transformation.rotation_euler[pyrr.euler.index().roll] += 0.1
         if glfw.KEY_J in self.touch and self.touch[glfw.KEY_J] > 0:
-            self.cam.transformation.rotation_euler[pyrr.euler.index().yaw] -= 0.1
-        if glfw.KEY_L in self.touch and self.touch[glfw.KEY_L] > 0:
-            self.cam.transformation.rotation_euler[pyrr.euler.index().yaw] += 0.1
+            self.cam.transformation.rotation_euler[pyrr.euler.index().yaw] -= 3.15
+
 
